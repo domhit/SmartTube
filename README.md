@@ -2,6 +2,7 @@ SmartTube PartyQueue API Edition
 
 Based on:
 - yuliskov/SmartTube
+- PR #5797 from Gonzoe79
 
 Additional features:
 - REST API for playback control
