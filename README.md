@@ -1,3 +1,17 @@
+SmartTube PartyQueue API Edition
+
+Based on:
+- yuliskov/SmartTube
+
+Additional features:
+- REST API for playback control
+- Queue management API
+- Playback state API
+
+Branches:
+- master: upstream SmartTube
+- partyqueue-api: REST API enabled
+
 [<img src="images/badge_fdroid.png" alt="Get it on F-Droid" height="80">](https://f-droid.org/packages/app.smarttube.fdroid/)
 [<img src="images/badge_github.png" alt="Get it on GitHub" height="80">](https://github.com/yuliskov/SmartTube/releases)
 
