@@ -13,6 +13,16 @@ Branches:
 - master: upstream SmartTube
 - partyqueue-api: REST API enabled
 
+Upstream-workflow for new SmartTube-Releases
+```shell
+git checkout master
+git fetch upstream
+git merge upstream/master
+git push
+git checkout partyqueue-ap
+git merge master
+git push
+```
 [<img src="images/badge_fdroid.png" alt="Get it on F-Droid" height="80">](https://f-droid.org/packages/app.smarttube.fdroid/)
 [<img src="images/badge_github.png" alt="Get it on GitHub" height="80">](https://github.com/yuliskov/SmartTube/releases)
 
