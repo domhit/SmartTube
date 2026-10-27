@@ -15,6 +15,8 @@ import com.liskovsoft.smartyoutubetv2.common.R;
 import com.liskovsoft.smartyoutubetv2.common.app.models.data.Playlist;
 import com.liskovsoft.smartyoutubetv2.common.app.models.data.SimpleMediaItem;
 import com.liskovsoft.smartyoutubetv2.common.app.models.data.Video;
+import com.liskovsoft.smartyoutubetv2.common.partyqueue.PartyQueueEvent;
+import com.liskovsoft.smartyoutubetv2.common.partyqueue.PartyQueueEventClient;
 import com.liskovsoft.smartyoutubetv2.common.app.models.data.VideoGroup;
 import com.liskovsoft.smartyoutubetv2.common.app.models.playback.BasePlayerController;
 import com.liskovsoft.smartyoutubetv2.common.app.models.playback.manager.PlayerConstants;
@@ -98,7 +100,7 @@ public class VideoLoaderController extends BasePlayerController {
         if (getPlayer() == null) {
             return;
         }
-        
+
         loadVideo(Helpers.firstNonNull(mPendingVideo, getVideo()));
         getPlayer().setButtonState(R.id.action_repeat, getPlayerData().getPlaybackMode());
         mPendingVideo = null;
@@ -114,7 +116,7 @@ public class VideoLoaderController extends BasePlayerController {
         if (getPlayer() == null) {
             return;
         }
-        
+
         getPlayer().setButtonState(R.id.action_repeat, video.finishOnEnded ? PlayerConstants.PLAYBACK_MODE_CLOSE : getPlayerData().getPlaybackMode());
         // Can't set title at this point
         //checkSleepTimer();
@@ -132,11 +134,14 @@ public class VideoLoaderController extends BasePlayerController {
         if (getGeneralData().isChildModeEnabled()) {
             onPlayEnd();
         } else {
+            sendPartyQueueUserSkip();
             loadNext();
         }
 
         return true;
     }
+
+
 
     public void loadPrevious() {
         if (getPlayer() == null) {
@@ -487,7 +492,7 @@ public class VideoLoaderController extends BasePlayerController {
         if (getPlayer() == null || getVideo() == null) {
             return;
         }
-        
+
         VideoGroup group = getVideo().getGroup(); // Get the VideoGroup (playlist)
 
         if (group != null && !group.isEmpty() && getVideo().belongsToSamePlaylistGroup()) {
@@ -629,4 +634,17 @@ public class VideoLoaderController extends BasePlayerController {
             MediaServiceManager.instance().loadFormatInfo(mSuggestionsController.getNext(), formatInfo -> {});
         }
     }
+    private void sendPartyQueueUserSkip() {
+        if (getPlayer() == null || getVideo() == null) return;
+        Video v = getVideo();
+        PartyQueueEventClient.instance(getContext()).send(
+                new PartyQueueEvent(PartyQueueEvent.USER_SKIP)
+                        .setVideoId(v.videoId)
+                        .setTitle(v.title)
+                        .setPositionMs(getPlayer().getPositionMs())
+                        .setDurationMs(getPlayer().getDurationMs())
+                        .setReason("next_clicked"));
+    }
+
+
 }

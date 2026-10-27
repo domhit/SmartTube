@@ -27,6 +27,7 @@ import com.liskovsoft.smartyoutubetv2.common.prefs.MainUIData;
 import com.liskovsoft.smartyoutubetv2.common.prefs.NetworkData;
 import com.liskovsoft.smartyoutubetv2.common.prefs.PlayerData;
 import com.liskovsoft.smartyoutubetv2.common.prefs.PlayerTweaksData;
+import com.liskovsoft.smartyoutubetv2.common.app.presenters.settings.PartyQueueSettingsPresenter;
 import com.liskovsoft.smartyoutubetv2.common.prefs.SearchData;
 import com.liskovsoft.smartyoutubetv2.common.proxy.ProxyManager;
 import com.liskovsoft.smartyoutubetv2.common.proxy.WebProxyDialog;
@@ -78,6 +79,7 @@ public class GeneralSettingsPresenter extends BasePresenter<Void> {
     public void show() {
         AppDialogPresenter settingsPresenter = AppDialogPresenter.instance(getContext());
 
+        settingsPresenter.appendSingleButton(UiOptionItem.from("PartyQueue", option -> PartyQueueSettingsPresenter.instance(getContext()).show()));
         appendBootToSection(settingsPresenter);
         appendEnabledSections(settingsPresenter);
         appendContextMenuItemsCategory(settingsPresenter);
@@ -352,7 +354,7 @@ public class GeneralSettingsPresenter extends BasePresenter<Void> {
                     mGeneralData.setDpadUpDownAction(GeneralData.ACTION_UNDEFINED);
                 },
                 mPlayerTweaksData.isQuickSkipVideosAltEnabled()));
-        
+
         options.add(UiOptionItem.from(getContext().getString(R.string.player_quick_skip_videos),
                 option -> {
                     mPlayerTweaksData.setQuickSkipVideosEnabled(option.isSelected());
@@ -424,7 +426,7 @@ public class GeneralSettingsPresenter extends BasePresenter<Void> {
         options.add(UiOptionItem.from("Page Up/Down -> Speed Up/Down",
                 option -> mGeneralData.setPageUpDownAction(option.isSelected() ? GeneralData.ACTION_SPEED_UP_DOWN : GeneralData.ACTION_UNDEFINED),
                 mGeneralData.getPageUpDownAction() == GeneralData.ACTION_SPEED_UP_DOWN));
-        
+
         options.add(UiOptionItem.from("Page Up/Down -> Speed Down/Up",
                 option -> mGeneralData.setPageUpDownAction(option.isSelected() ? GeneralData.ACTION_SPEED_DOWN_UP : GeneralData.ACTION_UNDEFINED),
                 mGeneralData.getPageUpDownAction() == GeneralData.ACTION_SPEED_DOWN_UP));

@@ -257,6 +257,8 @@ public class SponsorBlockController extends BasePlayerController {
         }
     }
 
+
+
     private void simpleSkip(long skipPosMs) {
         if (mLastSkipPosMs == skipPosMs) {
             return;
@@ -270,6 +272,7 @@ public class SponsorBlockController extends BasePlayerController {
         if (mLastSkipPosMs == skipPosMs) {
             return;
         }
+        sendPartyQueueSponsorSkip(getPlayer().getPositionMs(), skipPosMs, category);
 
         MessageHelpers.showMessage(getContext(),
                 String.format("%s: %s", getContext().getString(R.string.content_block_provider), getContext().getString(R.string.msg_skipping_segment, category)));
@@ -294,7 +297,7 @@ public class SponsorBlockController extends BasePlayerController {
         OptionItem acceptOption = UiOptionItem.from(
                 getContext().getString(R.string.confirm_segment_skip, category),
                 option -> {
-                    // return to previous dialog or close if no other dialogs in stack
+                                // return to previous dialog or close if no other dialogs in stack
                     dialogPresenter.goBack();
                     setPositionMs(skipPosMs);
                 }
@@ -422,4 +425,20 @@ public class SponsorBlockController extends BasePlayerController {
     private boolean isChannelExcluded(String channelId) {
         return !mSkipExclude && getSponsorBlockData().isChannelExcluded(channelId);
     }
+    private void sendPartyQueueSponsorSkip(long from, long to, String category) {
+        if (getPlayer() == null || getVideo() == null) return;
+        Video v = getVideo();
+        PartyQueueEventClient.instance(getContext()).send(
+                new PartyQueueEvent(PartyQueueEvent.SPONSORBLOCK_SKIP)
+                        .setVideoId(v.videoId)
+                        .setTitle(v.title)
+                        .setFromMs(from)
+                        .setToMs(to)
+                        .setPositionMs(from)
+                        .setDurationMs(getPlayer().getDurationMs())
+                        .setCategory(category)
+                        .setReason("sponsorblock"));
+    }
+
+
 }
