@@ -24,6 +24,8 @@ import com.liskovsoft.smartyoutubetv2.common.utils.Utils;
 import com.liskovsoft.youtubeapi.service.YouTubeServiceManager;
 import io.reactivex.Observable;
 import io.reactivex.disposables.Disposable;
+import com.liskovsoft.smartyoutubetv2.common.partyqueue.PartyQueueEvent;
+import com.liskovsoft.smartyoutubetv2.common.partyqueue.PartyQueueEventClient;
 
 import java.util.ArrayList;
 import java.util.List;
