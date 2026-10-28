@@ -35,17 +35,8 @@ public final class PartyQueueEventController extends BasePlayerController {
 
     @Override
     public void onVideoLoaded(Video item) {
-        mNaturalEndSent = false;
-
-        if (item != null) {
-            mStartedVideoId = item.videoId;
-            mStartedTitle = item.title;
-        }
-
-        if (getPlayer() != null) {
-            mStartedDurationMs = getPlayer().getDurationMs();
-            mLastPositionMs = getPlayer().getPositionMs();
-        }
+        // Do not replace the started-video snapshot here.
+        // Some devices preload the next item before onPlayEnd() for the current one.
     }
 
     @Override
@@ -55,8 +46,6 @@ public final class PartyQueueEventController extends BasePlayerController {
         if (video == null || getPlayer() == null || video.videoId == null) {
             return;
         }
-
-        updatePlaybackSnapshot();
 
         boolean newVideo =
                 mStartedVideoId == null ||
@@ -78,7 +67,10 @@ public final class PartyQueueEventController extends BasePlayerController {
             );
 
             mNaturalEndSent = false;
-        } else if (!mWasPlaying) {
+        } else {
+            updatePlaybackSnapshot();
+
+            if (!mWasPlaying) {
             /*
              * Nur ein echtes Resume veröffentlichen, wenn vorher
              * auch tatsächlich ein PAUSED-Event gesendet wurde.
@@ -91,10 +83,11 @@ public final class PartyQueueEventController extends BasePlayerController {
                         new PartyQueueEvent(PartyQueueEvent.RESUMED)
                                 .setVideoId(mStartedVideoId)
                                 .setTitle(mStartedTitle)
-                                .setPositionMs(getPlayer().getPositionMs())
-                                .setDurationMs(getPlayer().getDurationMs())
+                                .setPositionMs(mLastPositionMs)
+                                .setDurationMs(mStartedDurationMs)
                                 .setReason("player_resumed")
                 );
+            }
             }
         }
 
