@@ -4,6 +4,7 @@ on:
   push:
     branches:
       - feature/partyqueue-current
+      - port/rest-api-5797
   workflow_dispatch: {}
 
 permissions:
