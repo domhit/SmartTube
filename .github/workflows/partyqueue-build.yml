@@ -6,10 +6,12 @@ on:
       - feature/partyqueue-current
       - port/rest-api-5797
       - port/partyqueue-events
+    tags:
+      - "partyqueue-*"  
   workflow_dispatch: {}
 
 permissions:
-  contents: read
+  contents: write
 
 jobs:
   build:
@@ -68,3 +70,12 @@ jobs:
           path: artifacts/*.apk
           if-no-files-found: error
           retention-days: 14
+      - name: Create GitHub Release
+        if: startsWith(github.ref, 'refs/tags/partyqueue-')
+        uses: softprops/action-gh-release@v2
+        with:
+          name: SmartTube PartyQueue ${{ github.ref_name }}
+          generate_release_notes: true
+          prerelease: ${{ contains(github.ref_name, '-rc') }}
+          files: |
+            artifacts/*.apk
