@@ -1,0 +1,49 @@
+name: PartyQueue SmartTube Build
+
+on:
+  push:
+    branches:
+      - feature/partyqueue-current
+  workflow_dispatch: {}
+
+permissions:
+  contents: read
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          submodules: recursive
+          fetch-depth: 1
+
+      - name: Set up JDK 17
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: "17"
+          cache: gradle
+
+      - name: Make Gradle executable
+        run: chmod +x gradlew
+
+      - name: Build Stbeta Debug APK
+        run: ./gradlew assembleStbetaDebug
+
+      - name: Collect APKs
+        shell: bash
+        run: |
+          mkdir -p artifacts
+          find smarttubetv/build/outputs/apk -type f -name "*.apk" -exec cp {} artifacts/ \;
+          ls -lah artifacts
+
+      - name: Upload APKs
+        uses: actions/upload-artifact@v4
+        with:
+          name: smarttube-partyqueue-debug
+          path: artifacts/*.apk
+          if-no-files-found: error
+          retention-days: 14
