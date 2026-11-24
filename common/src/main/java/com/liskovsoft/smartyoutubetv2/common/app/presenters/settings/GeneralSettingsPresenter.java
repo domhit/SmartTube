@@ -774,18 +774,6 @@ public class GeneralSettingsPresenter extends BasePresenter<Void> {
         }));
     }
 
-            appendProxyManager(settingsPresenter);
-
-            appendConscrypt(settingsPresenter);
-
-            appendDNSCategory(settingsPresenter);
-
-            appendNetworkEngineCategory(settingsPresenter);
-
-            settingsPresenter.showDialog(title);
-        }));
-    }
-
     private void appendProxyManager(AppDialogPresenter settingsPresenter) {
         ProxyManager proxyManager = new ProxyManager(getContext());
 
