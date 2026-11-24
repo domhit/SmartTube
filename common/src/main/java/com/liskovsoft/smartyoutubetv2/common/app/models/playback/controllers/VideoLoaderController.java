@@ -25,6 +25,8 @@ import com.liskovsoft.smartyoutubetv2.common.misc.MediaServiceManager;
 import com.liskovsoft.smartyoutubetv2.common.prefs.PlayerData;
 import com.liskovsoft.smartyoutubetv2.common.utils.Utils;
 import com.liskovsoft.youtubeapi.service.YouTubeServiceManager;
+import com.liskovsoft.smartyoutubetv2.common.partyqueue.PartyQueueEvent;
+import com.liskovsoft.smartyoutubetv2.common.partyqueue.PartyQueueEventClient;
 
 import io.reactivex.disposables.Disposable;
 
@@ -98,7 +100,7 @@ public class VideoLoaderController extends BasePlayerController {
         if (getPlayer() == null) {
             return;
         }
-        
+
         loadVideo(Helpers.firstNonNull(mPendingVideo, getVideo()));
         getPlayer().setButtonState(R.id.action_repeat, getPlayerData().getPlaybackMode());
         mPendingVideo = null;
@@ -114,7 +116,7 @@ public class VideoLoaderController extends BasePlayerController {
         if (getPlayer() == null) {
             return;
         }
-        
+
         getPlayer().setButtonState(R.id.action_repeat, video.finishOnEnded ? PlayerConstants.PLAYBACK_MODE_CLOSE : getPlayerData().getPlaybackMode());
         // Can't set title at this point
         //checkSleepTimer();
@@ -132,6 +134,7 @@ public class VideoLoaderController extends BasePlayerController {
         if (getGeneralData().isChildModeEnabled()) {
             onPlayEnd();
         } else {
+            sendPartyQueueUserSkip();
             loadNext();
         }
 
@@ -223,6 +226,22 @@ public class VideoLoaderController extends BasePlayerController {
             getPlayer().setVideo(item);
             mSuggestionsController.loadSuggestions(item);
         }
+    }
+    private void sendPartyQueueUserSkip() {
+        if (getPlayer() == null || getVideo() == null) {
+            return;
+        }
+
+        Video video = getVideo();
+
+        PartyQueueEventClient.instance(getContext()).send(
+                new PartyQueueEvent(PartyQueueEvent.USER_SKIP)
+                        .setVideoId(video.videoId)
+                        .setTitle(video.title)
+                        .setPositionMs(getPlayer().getPositionMs())
+                        .setDurationMs(getPlayer().getDurationMs())
+                        .setReason("next_clicked")
+        );
     }
 
     private void waitMetadataSync(Video current, boolean showLoadingMsg) {
@@ -482,7 +501,7 @@ public class VideoLoaderController extends BasePlayerController {
         if (getPlayer() == null || getVideo() == null) {
             return;
         }
-        
+
         VideoGroup group = getVideo().getGroup(); // Get the VideoGroup (playlist)
 
         if (group != null && !group.isEmpty() && getVideo().belongsToSamePlaylistGroup()) {

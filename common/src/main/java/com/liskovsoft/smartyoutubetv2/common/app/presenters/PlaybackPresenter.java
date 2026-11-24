@@ -29,6 +29,7 @@ import com.liskovsoft.smartyoutubetv2.common.utils.Utils;
 import com.liskovsoft.smartyoutubetv2.common.utils.Utils.ChainProcessor;
 import com.liskovsoft.smartyoutubetv2.common.utils.Utils.Processor;
 import com.liskovsoft.googlecommon.common.helpers.ServiceHelper;
+import com.liskovsoft.smartyoutubetv2.common.partyqueue.PartyQueueEventController;
 
 import java.lang.ref.WeakReference;
 import java.util.List;
@@ -62,6 +63,7 @@ public class PlaybackPresenter extends BasePresenter<PlaybackView> implements Pl
         mEventListeners.add(new PlayerUIController());
         mEventListeners.add(new RemoteController(context));
         mEventListeners.add(new SponsorBlockController());
+        mEventListeners.add(new PartyQueueEventController(getContext()));
         mEventListeners.add(new AutoFrameRateController());
         mEventListeners.add(new HQDialogController());
         mEventListeners.add(new ChatController());
@@ -81,7 +83,7 @@ public class PlaybackPresenter extends BasePresenter<PlaybackView> implements Pl
     @Override
     public void onViewInitialized() {
         super.onViewInitialized();
-        
+
         initControllers();
     }
 

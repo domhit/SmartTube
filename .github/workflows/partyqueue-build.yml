@@ -5,6 +5,7 @@ on:
     branches:
       - feature/partyqueue-current
       - port/rest-api-5797
+      - port/partyqueue-events
   workflow_dispatch: {}
 
 permissions:

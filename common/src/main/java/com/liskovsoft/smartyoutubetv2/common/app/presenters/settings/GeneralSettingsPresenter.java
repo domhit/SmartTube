@@ -77,7 +77,12 @@ public class GeneralSettingsPresenter extends BasePresenter<Void> {
 
     public void show() {
         AppDialogPresenter settingsPresenter = AppDialogPresenter.instance(getContext());
-
+        settingsPresenter.appendSingleButton(
+                UiOptionItem.from(
+                        "PartyQueue",
+                        option -> PartyQueueSettingsPresenter.instance(getContext()).show()
+                )
+        );
         appendBootToSection(settingsPresenter);
         appendEnabledSections(settingsPresenter);
         appendContextMenuItemsCategory(settingsPresenter);

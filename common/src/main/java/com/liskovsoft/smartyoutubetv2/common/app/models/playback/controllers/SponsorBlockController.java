@@ -24,6 +24,8 @@ import com.liskovsoft.smartyoutubetv2.common.utils.Utils;
 import com.liskovsoft.youtubeapi.service.YouTubeServiceManager;
 import io.reactivex.Observable;
 import io.reactivex.disposables.Disposable;
+import com.liskovsoft.smartyoutubetv2.common.partyqueue.PartyQueueEvent;
+import com.liskovsoft.smartyoutubetv2.common.partyqueue.PartyQueueEventClient;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -270,11 +272,35 @@ public class SponsorBlockController extends BasePlayerController {
         if (mLastSkipPosMs == skipPosMs) {
             return;
         }
-
+        sendPartyQueueSponsorSkip(
+            getPlayer().getPositionMs(),
+            skipPosMs,
+            category
+        );
         MessageHelpers.showMessage(getContext(),
                 String.format("%s: %s", getContext().getString(R.string.content_block_provider), getContext().getString(R.string.msg_skipping_segment, category)));
         setPositionMs(skipPosMs);
         closeTransparentDialog();
+    }
+
+    private void sendPartyQueueSponsorSkip(long from, long to, String category) {
+        if (getPlayer() == null || getVideo() == null) {
+            return;
+        }
+
+        Video video = getVideo();
+
+        PartyQueueEventClient.instance(getContext()).send(
+                new PartyQueueEvent(PartyQueueEvent.SPONSORBLOCK_SKIP)
+                        .setVideoId(video.videoId)
+                        .setTitle(video.title)
+                        .setFromMs(from)
+                        .setToMs(to)
+                        .setPositionMs(from)
+                        .setDurationMs(getPlayer().getDurationMs())
+                        .setCategory(category)
+                        .setReason("sponsorblock")
+        );
     }
 
     private void confirmSkip(long skipPosMs, String category) {
