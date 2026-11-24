@@ -36,7 +36,18 @@ jobs:
           echo "keyPassword=${{ secrets.KEY_PASSWORD }}" >> keystore.properties
           echo "storeFile=${{ github.workspace }}/key.jks" >> keystore.properties
           echo "${{ secrets.SIGNING_KEY }}" | base64 --decode > key.jks
+      - name: Verify signing keystore
+        shell: bash
+        env:
+          KEY_STORE_PASSWORD: ${{ secrets.KEY_STORE_PASSWORD }}
+          KEY_ALIAS: ${{ secrets.ALIAS }}
+        run: |
+          keytool -list \
+            -keystore "${{ github.workspace }}/key.jks" \
+            -storepass "$KEY_STORE_PASSWORD" \
+            -alias "$KEY_ALIAS" > /dev/null
 
+          echo "Signing keystore verified successfully"
       - name: Make Gradle executable
         run: chmod +x gradlew
 
