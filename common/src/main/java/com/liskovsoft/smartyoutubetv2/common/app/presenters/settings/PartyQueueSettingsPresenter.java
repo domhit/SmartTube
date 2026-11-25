@@ -38,7 +38,8 @@ public final class PartyQueueSettingsPresenter extends BasePresenter<Void> {
                 UiOptionItem.from(
                         "PartyQueue URL: " + shown(mData.getUrl()),
                         option -> edit(
-                                "PartyQueue URL",
+                                presenter,
+                                "PartyQueue Server-URL",
                                 mData.getUrl(),
                                 value -> mData.setUrl(value)
                         )
@@ -49,7 +50,8 @@ public final class PartyQueueSettingsPresenter extends BasePresenter<Void> {
                 UiOptionItem.from(
                         "Device ID: " + shown(mData.getDeviceId()),
                         option -> edit(
-                                "Device ID",
+                                presenter,
+                                "PartyQueue Device-ID",
                                 mData.getDeviceId(),
                                 value -> mData.setDeviceId(value)
                         )
@@ -63,8 +65,9 @@ public final class PartyQueueSettingsPresenter extends BasePresenter<Void> {
                                         ? "nicht gesetzt"
                                         : "********"
                         ),
-                        option -> edit(
-                                "Event Token",
+                        option -> editPassword(
+                                presenter,
+                                "Gemeinsamer PartyQueue Event-Token",
                                 mData.getToken(),
                                 value -> mData.setToken(value)
                         )
@@ -93,18 +96,43 @@ public final class PartyQueueSettingsPresenter extends BasePresenter<Void> {
     }
 
     private void edit(
+            AppDialogPresenter presenter,
             String title,
             String currentValue,
             SaveAction saveAction
     ) {
+        // Close the settings sidebar before opening the Android edit dialog.
+        // Otherwise the dialog is rendered behind the sidebar and the OK key
+        // can be delivered to the still-active settings item a second time.
+        presenter.closeDialog();
         SimpleEditDialog.show(
                 getContext(),
                 title,
                 currentValue,
                 value -> {
-                    saveAction.save(value);
+                    saveAction.save(value.trim());
                     return true;
-                }
+                },
+                this::show
+        );
+    }
+
+    private void editPassword(
+            AppDialogPresenter presenter,
+            String title,
+            String currentValue,
+            SaveAction saveAction
+    ) {
+        presenter.closeDialog();
+        SimpleEditDialog.showPassword(
+                getContext(),
+                title,
+                currentValue,
+                value -> {
+                    saveAction.save(value.trim());
+                    return true;
+                },
+                this::show
         );
     }
 
