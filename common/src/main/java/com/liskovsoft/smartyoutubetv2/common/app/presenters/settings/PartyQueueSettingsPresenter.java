@@ -112,8 +112,7 @@ public final class PartyQueueSettingsPresenter extends BasePresenter<Void> {
                 value -> {
                     saveAction.save(value.trim());
                     return true;
-                },
-                this::show
+                }
         );
     }
 
@@ -131,8 +130,7 @@ public final class PartyQueueSettingsPresenter extends BasePresenter<Void> {
                 value -> {
                     saveAction.save(value.trim());
                     return true;
-                },
-                this::show
+                }
         );
     }
 
