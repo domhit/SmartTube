@@ -53,6 +53,12 @@ jobs:
       - name: Make Gradle executable
         run: chmod +x gradlew
 
+      - name: Set PartyQueue alpha3 versionCode
+        shell: bash
+        run: |
+          sed -i 's/versionCode 2473/versionCode 2474/' smarttubetv/build.gradle
+          grep -E "versionCode|versionName" smarttubetv/build.gradle
+
       - name: Build signed Stbeta Release
         run: ./gradlew assembleStbetaRelease
 
@@ -61,6 +67,12 @@ jobs:
         run: |
           mkdir -p artifacts
           find smarttubetv/build/outputs/apk -type f -name "*.apk" -exec cp {} artifacts/ \;
+          UNIVERSAL_APK=$(find artifacts -maxdepth 1 -type f -name "*universal*.apk" | head -1)
+          if [[ -z "$UNIVERSAL_APK" ]]; then
+            echo "Universal APK not found" >&2
+            exit 1
+          fi
+          cp "$UNIVERSAL_APK" artifacts/SmartTube_PartyQueue_latest.apk
           ls -lah artifacts
 
       - name: Generate PartyQueue update manifest
@@ -99,11 +111,41 @@ jobs:
           PYMANIFEST
           cat artifacts/smarttube_partyqueue.json
 
+      - name: Generate PartyQueue release notes
+        if: startsWith(github.ref, 'refs/tags/partyqueue-')
+        shell: bash
+        run: |
+          VERSION_CODE=$(sed -n 's/^[[:space:]]*versionCode[[:space:]]*\([0-9][0-9]*\).*/\1/p' smarttubetv/build.gradle | head -1)
+          cat > artifacts/RELEASE_NOTES.md <<EOF
+          # SmartTube PartyQueue ${GITHUB_REF_NAME}
+
+          Based on SmartTube 32.83.
+
+          ## PartyQueue additions
+          - REST API based on upstream PR #5797
+          - Playback events: video_started, video_ended, user_skip and SponsorBlock
+          - PartyQueue device settings and connection test
+          - Signed PartyQueue self-update channel
+
+          ## Installation
+          - Recommended manual install: SmartTube_PartyQueue_latest.apk
+          - Existing PartyQueue builds signed with the PartyQueue key can update directly in SmartTube.
+          - Prerelease update channel: partyqueue-prerelease-latest
+
+          ## Permanent download
+          https://github.com/${GITHUB_REPOSITORY}/releases/download/partyqueue-prerelease-latest/SmartTube_PartyQueue_latest.apk
+
+          Android versionCode: ${VERSION_CODE}
+          EOF
+
       - name: Upload signed APKs
         uses: actions/upload-artifact@v4
         with:
           name: smarttube-partyqueue-release
-          path: artifacts/*.apk
+          path: |
+            artifacts/*.apk
+            artifacts/smarttube_partyqueue.json
+            artifacts/RELEASE_NOTES.md
           if-no-files-found: error
           retention-days: 14
       - name: Create GitHub Release
@@ -111,11 +153,12 @@ jobs:
         uses: softprops/action-gh-release@v2
         with:
           name: SmartTube PartyQueue ${{ github.ref_name }}
-          generate_release_notes: true
+          body_path: artifacts/RELEASE_NOTES.md
           prerelease: ${{ contains(github.ref_name, '-alpha') || contains(github.ref_name, '-beta') || contains(github.ref_name, '-rc') }}
           files: |
             artifacts/*.apk
             artifacts/smarttube_partyqueue.json
+            artifacts/RELEASE_NOTES.md
 
       - name: Update moving PartyQueue channel
         if: startsWith(github.ref, 'refs/tags/partyqueue-')
@@ -132,7 +175,7 @@ jobs:
           fi
           gh release delete "$CHANNEL" --cleanup-tag --yes 2>/dev/null || true
           git push origin ":refs/tags/$CHANNEL" 2>/dev/null || true
-          gh release create "$CHANNEL" artifacts/*.apk artifacts/smarttube_partyqueue.json \
+          gh release create "$CHANNEL" artifacts/*.apk artifacts/smarttube_partyqueue.json artifacts/RELEASE_NOTES.md \
             --title "SmartTube PartyQueue latest channel" \
-            --notes "Moving update channel for ${GITHUB_REF_NAME}." \
+            --notes-file artifacts/RELEASE_NOTES.md \
             $PRERELEASE_FLAG
