@@ -24,9 +24,9 @@ import com.liskovsoft.smartyoutubetv2.common.app.views.PlaybackView;
 import com.liskovsoft.smartyoutubetv2.common.misc.MediaServiceManager;
 import com.liskovsoft.smartyoutubetv2.common.prefs.PlayerData;
 import com.liskovsoft.smartyoutubetv2.common.utils.Utils;
-import com.liskovsoft.youtubeapi.service.YouTubeServiceManager;
 import com.liskovsoft.smartyoutubetv2.common.partyqueue.PartyQueueEvent;
 import com.liskovsoft.smartyoutubetv2.common.partyqueue.PartyQueueEventClient;
+import com.liskovsoft.youtubeapi.service.YouTubeServiceManager;
 
 import io.reactivex.disposables.Disposable;
 
@@ -227,6 +227,7 @@ public class VideoLoaderController extends BasePlayerController {
             mSuggestionsController.loadSuggestions(item);
         }
     }
+
     private void sendPartyQueueUserSkip() {
         if (getPlayer() == null || getVideo() == null) {
             return;
@@ -521,13 +522,6 @@ public class VideoLoaderController extends BasePlayerController {
             return false;
         }
 
-        // Not enough info for full length live streams
-        if (formatInfo.isLive() && formatInfo.getStartTimeMs() == 0) {
-            return false;
-        }
-
-        // Live dash url doesn't work with None buffer
-        //if (formatInfo.isLive() && (getPlayerTweaksData().isDashUrlStreamsForced() || getPlayerData().getVideoBufferType() == PlayerData.BUFFER_NONE)) {
         if (formatInfo.isLive() && getPlayerTweaksData().isDashUrlStreamsForced() && formatInfo.containsDashUrl()) {
             return false;
         }
