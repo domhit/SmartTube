@@ -10,9 +10,10 @@ This fork tracks `yuliskov/SmartTube` and keeps the PartyQueue REST API, playbac
 - Current tested SmartTube base: `32.85`
 - Current source `versionCode`: `2475`
 - Last hardware-tested release: `partyqueue-32.85-v1.0.0-beta1`
-- Prerelease update channel: `partyqueue-prerelease-latest`
-- Prerelease Downloader code: `7001040`
-- Release Downloader code: `7029871`
+- Update channel: `partyqueue-latest`
+- Downloader code: `7029871`
+- Temporary legacy migration channel: `partyqueue-prerelease-latest`
+- Legacy Downloader code: `7001040` (migration only; do not use for new installations)
 - Tag format: `partyqueue-<smarttube-version>-v<partyqueue-version>`
 
 ## Branch model
@@ -22,25 +23,27 @@ This fork tracks `yuliskov/SmartTube` and keeps the PartyQueue REST API, playbac
 - `origin/update/partyqueue-<version>` is temporary and exists only while porting a new SmartTube upstream version.
 - The fork intentionally has no `origin/master` branch.
 
-## Update channels
+## Update channel
 
-### Prerelease channel
-
-- Moving tag: `partyqueue-prerelease-latest`
-- Downloader code: `7001040`
-- Permanent APK: `https://github.com/domhit/SmartTube/releases/download/partyqueue-prerelease-latest/SmartTube_PartyQueue_latest.apk`
-- Used by tags containing `alpha`, `beta`, or `rc`.
-- Intended for early testing and the maintainer's devices.
-
-### Release channel
+PartyQueue uses one permanent update channel:
 
 - Moving tag: `partyqueue-latest`
 - Downloader code: `7029871`
 - Permanent APK: `https://github.com/domhit/SmartTube/releases/download/partyqueue-latest/SmartTube_PartyQueue_latest.apk`
-- Used by final PartyQueue tags without a prerelease suffix.
-- Intended for the currently recommended build.
+- Update manifest: `https://github.com/domhit/SmartTube/releases/download/partyqueue-latest/smarttube_partyqueue.json`
 
-Both channels may point to the same tested build. They diverge only when a newer prerelease is being tested. "Release" refers to the PartyQueue integration; both channels can still be based on the SmartTube Beta flavor.
+All new installations and all migrated devices use this channel. The APK is still built from SmartTube's `stbeta` flavor; "Release" means a tested PartyQueue integration, not the official SmartTube Stable flavor.
+
+### One-time legacy migration bridge
+
+The currently installed 32.85 / versionCode 2475 PartyQueue build still checks the former `partyqueue-prerelease-latest` URL. Therefore the one-time migration build uses versionCode `2476`, already contains the new `partyqueue-latest` URL, and is temporarily published to both moving tags.
+
+After all maintained devices have updated to versionCode 2476 or newer:
+
+1. Delete the visible `partyqueue-prerelease-latest` legacy release/tag.
+2. Remove the legacy compatibility block from `.github/workflows/partyqueue-build.yml`.
+3. Retire Downloader code `7001040`.
+4. Keep Downloader code `7029871` as the only installation code.
 
 ## Before updating from upstream
 
@@ -94,7 +97,7 @@ git submodule update --init --recursive
 
 7. Push the update branch and require a green signed `StbetaRelease` GitHub Actions build.
 
-8. Create a prerelease tag. Test the upgrade from the preceding PartyQueue build through SmartTube's built-in updater. Do not replace the installed app manually for this migration test.
+8. When the port is ready, publish the intended PartyQueue release tag and test the upgrade from the preceding installed PartyQueue build through SmartTube's built-in updater. Do not replace the installed app manually for this migration test.
 
 9. Hardware validate REST, queue control and PartyQueue Events. At minimum verify `video_started`, `user_skip`, `sponsorblock_skip`, settings persistence, HTTP 200 connection test, and a normal playback transition.
 
@@ -126,7 +129,7 @@ git tag -a partyqueue-<smarttube-version>-v<partyqueue-version> -m "SmartTube <s
 git push origin partyqueue-<smarttube-version>-v<partyqueue-version>
 ```
 
-Prerelease tags update `partyqueue-prerelease-latest`; final tags update `partyqueue-latest`.
+Every published PartyQueue tag updates `partyqueue-latest`. There is no permanent prerelease channel.
 
 The committed `versionCode` in `smarttubetv/build.gradle` must match the signed APK, `smarttube_partyqueue.json`, and generated release notes. Never override the release `versionCode` only inside GitHub Actions.
 
