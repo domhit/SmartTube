@@ -3,9 +3,8 @@ name: PartyQueue SmartTube Build
 on:
   push:
     branches:
-      - feature/partyqueue-current
-      - port/rest-api-5797
-      - port/partyqueue-events
+      - partyqueue-api
+      - "update/**"
     tags:
       - "partyqueue-*"
   workflow_dispatch: {}
