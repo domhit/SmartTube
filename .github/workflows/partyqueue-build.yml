@@ -123,12 +123,13 @@ jobs:
 
           ## Installation
 
-          ### Downloader
-          Code: 7001040
+          ### Built-in updater
+          Existing PartyQueue SmartTube installations should use the built-in updater.
 
-          - First installation: use Downloader code 7001040 or download SmartTube_PartyQueue_latest.apk.
-          - Existing PartyQueue SmartTube installations should use the built-in updater.
-          - Prerelease update channel: partyqueue-prerelease-latest
+          ### Downloader
+          - Prerelease channel: code 7001040
+          - Release channel: code 7029871
+          - First installation: use the code for the desired channel or download SmartTube_PartyQueue_latest.apk.
 
           ## Permanent download
           https://github.com/${GITHUB_REPOSITORY}/releases/download/partyqueue-prerelease-latest/SmartTube_PartyQueue_latest.apk
@@ -166,15 +167,19 @@ jobs:
         run: |
           if [[ "${GITHUB_REF_NAME}" == *-alpha* || "${GITHUB_REF_NAME}" == *-beta* || "${GITHUB_REF_NAME}" == *-rc* ]]; then
             CHANNEL=partyqueue-prerelease-latest
+            CHANNEL_TITLE="SmartTube PartyQueue - Prerelease Channel"
+            DOWNLOADER_CODE=7001040
             PRERELEASE_FLAG=--prerelease
           else
             CHANNEL=partyqueue-latest
+            CHANNEL_TITLE="SmartTube PartyQueue - Release Channel"
+            DOWNLOADER_CODE=7029871
             PRERELEASE_FLAG=--latest
           fi
           gh release delete "$CHANNEL" --cleanup-tag --yes 2>/dev/null || true
           git push origin ":refs/tags/$CHANNEL" 2>/dev/null || true
           gh release create "$CHANNEL" artifacts/*.apk artifacts/smarttube_partyqueue.json artifacts/RELEASE_NOTES.md \
             --target "$GITHUB_SHA" \
-            --title "SmartTube PartyQueue latest channel" \
-            --notes-file artifacts/RELEASE_NOTES.md \
+            --title "$CHANNEL_TITLE" \
+            --notes "Moving channel for ${GITHUB_REF_NAME}. Downloader code: ${DOWNLOADER_CODE}." \
             $PRERELEASE_FLAG
