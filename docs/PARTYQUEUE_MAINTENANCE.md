@@ -11,10 +11,16 @@ This fork tracks `yuliskov/SmartTube` and keeps the PartyQueue REST API, playbac
 - Historical REST-only checkpoint: `port/rest-api-5797`
 - Current tested SmartTube base: `32.85`
 - Current source `versionCode`: `2475`
-- Last hardware-tested release: `partyqueue-32.83-v1.0.0-alpha3`
+- Last hardware-tested release: `partyqueue-32.85-v1.0.0-beta1`
 - Prerelease update channel: `partyqueue-prerelease-latest`
 - Permanent Downloader code: `7001040`
 - Tag format: `partyqueue-<smarttube-version>-v<partyqueue-version>`
+
+The Downloader code `7001040` points to the permanent prerelease APK:
+
+`https://github.com/domhit/SmartTube/releases/download/partyqueue-prerelease-latest/SmartTube_PartyQueue_latest.apk`
+
+Existing PartyQueue SmartTube installations should normally use the built-in updater instead of reinstalling the APK manually.
 
 ## Before updating from upstream
 
@@ -60,11 +66,24 @@ Use the historical commits on `port/rest-api-5797` and `port/partyqueue-events` 
 - Release contains `smarttube_partyqueue.json` and `SmartTube_PartyQueue_latest.apk`.
 - In-app update from the preceding PartyQueue release succeeds and preserves settings.
 
+## SmartTube 32.85 hardware validation
+
+Hardware tested on `ke75`:
+
+- In-app update from SmartTube PartyQueue 32.83 / versionCode 2474 to 32.85 / versionCode 2475 succeeded.
+- Existing PartyQueue settings were preserved.
+- REST API connection test returned HTTP 200.
+- REST playback and SmartTube queue access worked.
+- `video_started` events worked.
+- `user_skip` events worked and produced `skipped` history.
+- `sponsorblock_skip` events worked.
+- Event session and sequence handling worked after the update.
+
 ## Versioning and releases
 
 Every update release needs a strictly higher Android `versionCode`. `versionName` follows upstream SmartTube; the Git tag carries the PartyQueue integration version.
 
-Example: `partyqueue-32.83-v1.0.0-alpha3`
+Example: `partyqueue-32.85-v1.0.0-beta1`
 
 ```bash
 git tag -a partyqueue-<smarttube-version>-v<partyqueue-version> -m "SmartTube <smarttube-version> PartyQueue <partyqueue-version>"
