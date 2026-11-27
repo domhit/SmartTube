@@ -9,8 +9,8 @@ This fork tracks `yuliskov/SmartTube` and keeps the PartyQueue REST API, playbac
 - Maintained PartyQueue branch: `partyqueue-api`
 - Historical tested branch: `port/partyqueue-events`
 - Historical REST-only checkpoint: `port/rest-api-5797`
-- Current tested SmartTube base: `32.83`
-- Current source `versionCode`: `2474`
+- Current tested SmartTube base: `32.85`
+- Current source `versionCode`: `2475`
 - Last hardware-tested release: `partyqueue-32.83-v1.0.0-alpha3`
 - Prerelease update channel: `partyqueue-prerelease-latest`
 - Permanent Downloader code: `7001040`
