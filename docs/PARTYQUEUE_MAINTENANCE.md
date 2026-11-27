@@ -6,10 +6,15 @@ This fork tracks `yuliskov/SmartTube` and keeps the PartyQueue REST API, playbac
 
 - Upstream remote: `https://github.com/yuliskov/SmartTube.git`
 - Fork: `https://github.com/domhit/SmartTube.git`
-- Development branch: `port/partyqueue-events`
-- REST-only checkpoint: `port/rest-api-5797`
+- Maintained PartyQueue branch: `partyqueue-api`
+- Historical tested branch: `port/partyqueue-events`
+- Historical REST-only checkpoint: `port/rest-api-5797`
+- Current tested SmartTube base: `32.83`
+- Current source `versionCode`: `2474`
+- Last hardware-tested release: `partyqueue-32.83-v1.0.0-alpha3`
+- Prerelease update channel: `partyqueue-prerelease-latest`
+- Permanent Downloader code: `7001040`
 - Tag format: `partyqueue-<smarttube-version>-v<partyqueue-version>`
-- Current SmartTube base: `32.83`
 
 ## Before updating from upstream
 
@@ -27,10 +32,10 @@ The working tree must be clean. Record the current PartyQueue baseline and creat
 Do not merge a new upstream directly into the tested PartyQueue branch. Create a fresh port branch from the new upstream commit:
 
 ```bash
-git switch port/partyqueue-events
+git switch partyqueue-api
 git pull
 git fetch upstream --tags
-git switch -c port/partyqueue-<new-smarttube-version> upstream/master
+git switch -c update/partyqueue-<new-smarttube-version> upstream/master
 git submodule update --init --recursive
 ```
 
@@ -67,6 +72,10 @@ git push origin partyqueue-<smarttube-version>-v<partyqueue-version>
 ```
 
 Prerelease tags update `partyqueue-prerelease-latest`; final tags update `partyqueue-latest`.
+
+The committed `versionCode` in `smarttubetv/build.gradle` must match the version used by the signed APK and `smarttube_partyqueue.json`. Do not override the release `versionCode` only inside GitHub Actions.
+
+The moving release must be created with `--target "$GITHUB_SHA"` so that its Git tag, source commit, update manifest and APK assets refer to the same build.
 
 ## Likely conflict files
 
