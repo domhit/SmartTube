@@ -12,8 +12,6 @@ This fork tracks `yuliskov/SmartTube` and keeps the PartyQueue REST API, playbac
 - Last hardware-tested release: `partyqueue-32.85-v1.0.0-beta1`
 - Update channel: `partyqueue-latest`
 - Downloader code: `7029871`
-- Temporary legacy migration channel: `partyqueue-prerelease-latest`
-- Legacy Downloader code: `7001040` (migration only; do not use for new installations)
 - Tag format: `partyqueue-<smarttube-version>-v<partyqueue-version>`
 
 ## Branch model
@@ -33,17 +31,6 @@ PartyQueue uses one permanent update channel:
 - Update manifest: `https://github.com/domhit/SmartTube/releases/download/partyqueue-latest/smarttube_partyqueue.json`
 
 All new installations and all migrated devices use this channel. The APK is still built from SmartTube's `stbeta` flavor; "Release" means a tested PartyQueue integration, not the official SmartTube Stable flavor.
-
-### One-time legacy migration bridge
-
-The currently installed 32.85 / versionCode 2475 PartyQueue build still checks the former `partyqueue-prerelease-latest` URL. Therefore the one-time migration build uses versionCode `2476`, already contains the new `partyqueue-latest` URL, and is temporarily published to both moving tags.
-
-After all maintained devices have updated to versionCode 2476 or newer:
-
-1. Delete the visible `partyqueue-prerelease-latest` legacy release/tag.
-2. Remove the legacy compatibility block from `.github/workflows/partyqueue-build.yml`.
-3. Retire Downloader code `7001040`.
-4. Keep Downloader code `7029871` as the only installation code.
 
 ## Before updating from upstream
 
@@ -134,6 +121,8 @@ Every published PartyQueue tag updates `partyqueue-latest`. There is no permanen
 The committed `versionCode` in `smarttubetv/build.gradle` must match the signed APK, `smarttube_partyqueue.json`, and generated release notes. Never override the release `versionCode` only inside GitHub Actions.
 
 The moving release must be created with `--target "$GITHUB_SHA"` so that its Git tag, source commit, update manifest and APK assets refer to the same build.
+
+The former partyqueue-prerelease-latest channel was retired after all maintained installations migrated to versionCode 2476.
 
 ## Likely conflict files
 
